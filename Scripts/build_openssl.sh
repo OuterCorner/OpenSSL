@@ -11,16 +11,14 @@ else
     echo "No previously-built libary present at $TARGET_BUILD_DIR/$LIB_PRODUCT_NAME - performing build"
 fi
 
-if [ -f "$OPENSSL_TARBALL" ]; then
-    echo "Extracting $OPENSSL_TARBALL..."
-    mkdir -p "$OPENSSL_SRC"
-    tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
-else
-	echo "Downloading openssl-${VERSION}.tar.gz"
-	curl -O "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz"
+if [ ! -f "$OPENSSL_TARBALL" ]; then
+	echo "Downloading openssl-$OPENSSL_VERSION.tar.gz"
+	curl -O "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" || exit 1
 fi
 
-
+echo "Extracting $OPENSSL_TARBALL..."
+mkdir -p "$OPENSSL_SRC"
+tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
 
 if [ "$SDKROOT" == "" ]; then
     echo "SDKROOT not defined"

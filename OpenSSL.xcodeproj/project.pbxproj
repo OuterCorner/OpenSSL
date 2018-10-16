@@ -249,7 +249,6 @@
 /* Begin XCBuildConfiguration section */
 		D7ADDD572175F2D4000EDCC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7ADDD652175F64F000EDCC4 /* common.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -368,6 +367,7 @@
 		};
 		D7ADDD5A2175F2D4000EDCC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D7ADDD652175F64F000EDCC4 /* common.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
@@ -395,6 +395,7 @@
 		};
 		D7ADDD5B2175F2D4000EDCC4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D7ADDD652175F64F000EDCC4 /* common.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
