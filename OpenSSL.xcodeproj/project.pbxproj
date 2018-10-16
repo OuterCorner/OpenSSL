@@ -25,7 +25,6 @@
 		D7ADDD512175F2D4000EDCC4 /* OpenSSL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenSSL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7ADDD542175F2D4000EDCC4 /* OpenSSL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSSL.h; sourceTree = "<group>"; };
 		D7ADDD552175F2D4000EDCC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D7ADDD652175F64F000EDCC4 /* common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = common.xcconfig; sourceTree = "<group>"; };
 		D7ADDD6A21761CD3000EDCC4 /* libopenssl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libopenssl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7ADDD7021761D0F000EDCC4 /* build_openssl.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_openssl.sh; sourceTree = "<group>"; };
 		D7ADDD7221761FB0000EDCC4 /* openssl.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = openssl.xcconfig; sourceTree = "<group>"; };
@@ -75,7 +74,6 @@
 		D7ADDD642175F63F000EDCC4 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				D7ADDD652175F64F000EDCC4 /* common.xcconfig */,
 				D7ADDD7221761FB0000EDCC4 /* openssl.xcconfig */,
 			);
 			path = Config;
@@ -224,7 +222,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "HEADERS_SOURCE_DIR=\"$TARGET_BUILD_DIR/include/openssl\"\nHEADERS_INSTALL_DIR=\"$BUILT_PRODUCTS_DIR\"/\"$PUBLIC_HEADERS_FOLDER_PATH\"\nHEADER_LIST=`ls \"$HEADERS_SOURCE_DIR\"/*.h | grep -v \"asn1_mac.h\"`\n\nmkdir -p \"$HEADERS_INSTALL_DIR\"\nfor HEADER in $HEADER_LIST; do\n    cp \"$HEADER\" \"${HEADERS_INSTALL_DIR}\"\ndone\n\nsed -i.bak \"s/\\<openssl\\//\\<OpenSSL\\//g\" \"$HEADERS_INSTALL_DIR/\"*\ncd \"$HEADERS_INSTALL_DIR\"\nrm *.bak\nls *.h | grep -v \"OpenSSL.h\" | sed -Ee \"s|(.+\\.h)$|#import <OpenSSL\\/\\1>|\" >> \"$HEADERS_INSTALL_DIR\"/OpenSSL.h\n";
+			shellScript = "HEADERS_SOURCE_DIR=\"$TARGET_BUILD_DIR/headers/openssl\"\nHEADERS_INSTALL_DIR=\"$BUILT_PRODUCTS_DIR\"/\"$PUBLIC_HEADERS_FOLDER_PATH\"\nHEADER_LIST=`ls \"$HEADERS_SOURCE_DIR\"/*.h | grep -v \"asn1_mac.h\"`\n\nmkdir -p \"$HEADERS_INSTALL_DIR\"\nfor HEADER in $HEADER_LIST; do\n    cp \"$HEADER\" \"${HEADERS_INSTALL_DIR}\"\ndone\n\nsed -i.bak \"s/\\<openssl\\//\\<OpenSSL\\//g\" \"$HEADERS_INSTALL_DIR/\"*\ncd \"$HEADERS_INSTALL_DIR\"\nrm *.bak\nls *.h | grep -v \"OpenSSL.h\" | sed -Ee \"s|(.+\\.h)$|#import <OpenSSL\\/\\1>|\" >> \"$HEADERS_INSTALL_DIR\"/OpenSSL.h\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -311,7 +309,6 @@
 		};
 		D7ADDD582175F2D4000EDCC4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7ADDD652175F64F000EDCC4 /* common.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -367,7 +364,7 @@
 		};
 		D7ADDD5A2175F2D4000EDCC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7ADDD652175F64F000EDCC4 /* common.xcconfig */;
+			baseConfigurationReference = D7ADDD7221761FB0000EDCC4 /* openssl.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
@@ -395,7 +392,7 @@
 		};
 		D7ADDD5B2175F2D4000EDCC4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7ADDD652175F64F000EDCC4 /* common.xcconfig */;
+			baseConfigurationReference = D7ADDD7221761FB0000EDCC4 /* openssl.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
