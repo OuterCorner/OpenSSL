@@ -19,7 +19,7 @@ After importing the umbrella header:
 ```ObjC
 #import <OpenSSL/OpenSSL.h>
 ```
-And start using OpenSSL APIs as usual.
+You can simply start using OpenSSL APIs as usual.
 
 ```ObjC
 Byte buffer[128];
@@ -31,7 +31,7 @@ See example projects under ```Examples/```.
 
 ## Issues
 
-When including this framework in your project, you'll have to set **Allow Non-modular Includes In Framework Modules** to YES.
+When including this framework in your project you'll have to set **Allow Non-modular Includes In Framework Modules** to YES.
 
 ```
 CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES
@@ -49,5 +49,5 @@ The build scripts for this project were based on:
 
  * [sqlcipher/openssl-xcode](https://github.com/sqlcipher/openssl-xcode)
  * [keeshux/openssl-apple](https://github.com/keeshux/openssl-apple)
-
+ * [sinofool/build-openssl-ios](https://github.com/sinofool/build-openssl-ios)
 
