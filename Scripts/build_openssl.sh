@@ -20,17 +20,14 @@ echo "Extracting $OPENSSL_TARBALL..."
 mkdir -p "$OPENSSL_SRC"
 tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
 
-if [ "$SDKROOT" == "" ]; then
-    echo "SDKROOT not defined"
-	exit 1
+if [ "$PLATFORM_NAME" == "" ]; then
+	echo "PLATFORM_NAME not defined"
 fi
 
-
-echo "Creating $LIB_PRODUCT_NAME for architectures: $ARCHS"
-
+CC="xcrun -sdk $PLATFORM_NAME cc"
 OPENSSL_OPTIONS="no-shared $OPENSSL_OPTIONS"
 
-echo "Using OPENSSL_OPTIONS $OPENSSL_OPTIONS"
+echo "Creating $LIB_PRODUCT_NAME with $OPENSSL_OPTIONS for architectures: $ARCHS"
 
 cd "$OPENSSL_SRC"
 
@@ -42,21 +39,27 @@ do
 
 	if [ "$PLATFORM_NAME" = "macosx" ]; then
 		if [ "$BUILDARCH" = "i386" ]; then
-			OPENSSL_OPTIONS="darwin-i386-cc $OPENSSL_OPTIONS"
+			CONFIGURE_OPTIONS="darwin-i386-cc $OPENSSL_OPTIONS"
 		elif [ "$BUILDARCH" = "x86_64" ]; then
-			OPENSSL_OPTIONS="darwin64-x86_64-cc $OPENSSL_OPTIONS"
+			CONFIGURE_OPTIONS="darwin64-x86_64-cc $OPENSSL_OPTIONS"
 		fi
 	elif [ "$PLATFORM_NAME" = "iphoneos" ]; then
-		echo "Not done yet"
+		if [[ "$BUILDARCH" = "armv"* ]]; then
+			CONFIGURE_OPTIONS="ios-xcrun $OPENSSL_OPTIONS"
+		elif [ "$BUILDARCH" = "arm64" ]; then
+			CONFIGURE_OPTIONS="ios64-xcrun $OPENSSL_OPTIONS"
+		fi
+	elif [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
+		CONFIGURE_OPTIONS="iossimulator-xcrun $OPENSSL_OPTIONS"
 	else
 		echo "Unsupported platform $PLATFORM_NAME"
 		exit 1
 	fi
 	
-	./Configure  $OPENSSL_OPTIONS -openssldir="$BUILD_DIR"
+	./Configure  $CONFIGURE_OPTIONS -fembed-bitcode -openssldir="$BUILD_DIR"
 	
     make depend
-    make CC="$PLATFORM_DEVELOPER_BIN_DIR/gcc" CFLAG="-w -fembed-bitcode -Xanalyzer -arch $BUILDARCH -isysroot $SDKROOT"
+    make
 
 	echo "Creating $LIB_PRODUCT_NAME for $BUILDARCH in $TARGET_TEMP_DIR"
     libtool -static libcrypto.a libssl.a -o "$TARGET_TEMP_DIR/$BUILDARCH-$LIB_PRODUCT_NAME"

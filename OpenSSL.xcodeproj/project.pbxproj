@@ -22,6 +22,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D76C0E29217737D000BC534D /* project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = project.xcconfig; sourceTree = "<group>"; };
 		D7ADDD512175F2D4000EDCC4 /* OpenSSL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenSSL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7ADDD542175F2D4000EDCC4 /* OpenSSL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSSL.h; sourceTree = "<group>"; };
 		D7ADDD552175F2D4000EDCC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -74,6 +75,7 @@
 		D7ADDD642175F63F000EDCC4 /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				D76C0E29217737D000BC534D /* project.xcconfig */,
 				D7ADDD7221761FB0000EDCC4 /* openssl.xcconfig */,
 			);
 			path = Config;
@@ -247,6 +249,7 @@
 /* Begin XCBuildConfiguration section */
 		D7ADDD572175F2D4000EDCC4 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D76C0E29217737D000BC534D /* project.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -297,11 +300,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -309,6 +313,7 @@
 		};
 		D7ADDD582175F2D4000EDCC4 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D76C0E29217737D000BC534D /* project.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -353,10 +358,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -425,8 +431,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 32HNEEH56A;
 				EXECUTABLE_PREFIX = lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -439,8 +443,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 32HNEEH56A;
 				EXECUTABLE_PREFIX = lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
