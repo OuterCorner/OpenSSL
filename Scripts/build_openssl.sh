@@ -1,6 +1,11 @@
 OPENSSL_TARBALL="$SRCROOT/openssl-$OPENSSL_VERSION.tar.gz"
 OPENSSL_SRC="$TARGET_TEMP_DIR/openssl/"
 LIB_PRODUCT_NAME="$FULL_PRODUCT_NAME"
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+if [ "$PLATFORM_NAME" == "" ]; then
+	echo "PLATFORM_NAME not defined"
+fi
 
 # check whether libcrypto.a already exists - we'll only build if it does not
 if [ -f  "$TARGET_BUILD_DIR/$LIB_PRODUCT_NAME" ]; then
@@ -19,17 +24,15 @@ fi
 echo "Extracting $OPENSSL_TARBALL..."
 mkdir -p "$OPENSSL_SRC"
 tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
-
-if [ "$PLATFORM_NAME" == "" ]; then
-	echo "PLATFORM_NAME not defined"
-fi
+cd "$OPENSSL_SRC"
+patch -p1 < "$SCRIPTS_DIR/iossimulator_patch.diff"
 
 CC="xcrun -sdk $PLATFORM_NAME cc"
 OPENSSL_OPTIONS="no-shared $OPENSSL_OPTIONS"
 
 echo "Creating $LIB_PRODUCT_NAME with $OPENSSL_OPTIONS for architectures: $ARCHS"
 
-cd "$OPENSSL_SRC"
+
 
 for BUILDARCH in $ARCHS
 do
@@ -50,7 +53,11 @@ do
 			CONFIGURE_OPTIONS="ios64-xcrun $OPENSSL_OPTIONS"
 		fi
 	elif [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
-		CONFIGURE_OPTIONS="iossimulator-xcrun $OPENSSL_OPTIONS"
+		if [ "$BUILDARCH" = "i386" ]; then
+			CONFIGURE_OPTIONS="iossimulator-xcrun $OPENSSL_OPTIONS"
+		elif [ "$BUILDARCH" = "x86_64" ]; then
+			CONFIGURE_OPTIONS="iossimulator64-xcrun $OPENSSL_OPTIONS"
+		fi
 	else
 		echo "Unsupported platform $PLATFORM_NAME"
 		exit 1
