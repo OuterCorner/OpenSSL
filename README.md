@@ -30,7 +30,7 @@ And run:
 carthage update
 ```
 
-By default Carthage will download the pre-build binaries (faster), if you want to compule from source pass ```--no-use-binaries``` to the update command above.
+By default Carthage will download the pre-build binaries (faster), if you want to compile from source pass ```--no-use-binaries``` to the update command above.
 
 ## Usage
 
@@ -57,7 +57,7 @@ When including this framework in your project you'll have to set **Allow Non-mod
 CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES
 ```
 
-This is needed because the current version of OpenSSL public headers reference system headers.
+This is needed because the current version of OpenSSL's public headers reference system headers.
 
 ## License
 
