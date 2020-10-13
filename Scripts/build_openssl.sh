@@ -60,7 +60,9 @@ do
 			CONFIGURE_OPTIONS="iossimulator-xcrun $OPENSSL_OPTIONS"
 		elif [ "$BUILDARCH" = "x86_64" ]; then
 			CONFIGURE_OPTIONS="iossimulator64-xcrun $OPENSSL_OPTIONS"
-		fi
+        elif [ "$BUILDARCH" = "arm64" ]; then
+            CONFIGURE_OPTIONS="iossimulator-arm64-xcrun $OPENSSL_OPTIONS"
+        fi
 	else
 		echo "Unsupported platform $PLATFORM_NAME"
 		exit 1

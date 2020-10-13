@@ -22,6 +22,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		272C8E8D2535D0160085764E /* create-xcframework.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "create-xcframework.sh"; sourceTree = "<group>"; };
 		D76C0E29217737D000BC534D /* project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = project.xcconfig; sourceTree = "<group>"; };
 		D7ADDD512175F2D4000EDCC4 /* OpenSSL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OpenSSL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7ADDD542175F2D4000EDCC4 /* OpenSSL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSSL.h; sourceTree = "<group>"; };
@@ -85,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				D7ADDD7021761D0F000EDCC4 /* build_openssl.sh */,
+				272C8E8D2535D0160085764E /* create-xcframework.sh */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";

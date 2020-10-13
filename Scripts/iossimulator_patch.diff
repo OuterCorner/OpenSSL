@@ -2,18 +2,29 @@ diff --git a/Configurations/15-ios.conf b/Configurations/15-ios.conf
 index aff909620f..033d94b8c7 100644
 --- a/Configurations/15-ios.conf
 +++ b/Configurations/15-ios.conf
-@@ -29,6 +29,14 @@ my %targets = (
+@@ -29,9 +29,25 @@
      "iossimulator-xcrun" => {
          inherit_from     => [ "darwin-common" ],
          CC               => "xcrun -sdk iphonesimulator cc",
 +		cflags           => add("-arch i386"),
-+        sys_id           => "iOS",
-+        disable          => [ "engine" ],
-+    },
-+    "iossimulator64-xcrun" => {
-+        inherit_from     => [ "darwin-common" ],
-+        CC               => "xcrun -sdk iphonesimulator cc",
-+		cflags           => add("-arch x86_64"),
          sys_id           => "iOS",
          disable          => [ "engine" ],
      },
++	"iossimulator64-xcrun" => {
++	    inherit_from     => [ "darwin-common" ],
++	    CC               => "xcrun -sdk iphonesimulator cc",
++		cflags           => add("-arch x86_64"),
++		sys_id           => "iOS",
++        disable          => [ "engine" ],
++	 },
++ 	"iossimulator-arm64-xcrun" => {
++ 	    inherit_from     => [ "darwin-common" ],
++ 	    CC               => "xcrun -sdk iphonesimulator cc",
++ 		cflags           => add("-arch arm64"),
++ 		sys_id           => "iOS",
++         disable          => [ "engine" ],
++ 	 },
++	 
+ # It takes three prior-set environment variables to make it work:
+ #
+ # CROSS_COMPILE=/where/toolchain/is/usr/bin/ [note ending slash]
