@@ -26,6 +26,7 @@ mkdir -p "$OPENSSL_SRC"
 tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
 cd "$OPENSSL_SRC"
 patch -p1 < "$SCRIPTS_DIR/iossimulator_patch.diff"
+patch -p1 < "$SCRIPTS_DIR/macos_arm64_patch.diff"
 
 CC="xcrun -sdk $PLATFORM_NAME cc"
 OPENSSL_OPTIONS="no-shared $OPENSSL_OPTIONS"
@@ -45,7 +46,9 @@ do
 			CONFIGURE_OPTIONS="darwin-i386-cc $OPENSSL_OPTIONS"
 		elif [ "$BUILDARCH" = "x86_64" ]; then
 			CONFIGURE_OPTIONS="darwin64-x86_64-cc $OPENSSL_OPTIONS"
-		fi
+        elif [ "$BUILDARCH" = "arm64" ]; then
+            CONFIGURE_OPTIONS="darwin64-arm64-cc $OPENSSL_OPTIONS"
+        fi
 	elif [ "$PLATFORM_NAME" = "iphoneos" ]; then
 		if [[ "$BUILDARCH" = "armv"* ]]; then
 			CONFIGURE_OPTIONS="ios-xcrun $OPENSSL_OPTIONS"
