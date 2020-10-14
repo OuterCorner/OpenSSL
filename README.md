@@ -15,22 +15,23 @@ You have a few different options:
 ### Manual installation
 
  *  Include the OpenSSL.xcodeproj as a dependency in your project. This is what the projects under ```Examples/``` are doing. Doing this means OpenSSL will be compiled alongside your project, including after every clean (building OpenSSL can take a while).  
- *  Use a pre-built OpenSSL.framework. You can find them under [Releases](https://github.com/OuterCorner/OpenSSL/releases).
+ *  Use a pre-built OpenSSL.xcframework. You can find them under [Releases](https://github.com/OuterCorner/OpenSSL/releases).
 
-### Carthage
+### SwiftPM
 
-Add OpenSSL as a dependency on your ```Cartfile```:
-
-```
-github "OuterCorner/OpenSSL"
-```
-And run:
-
-```
-carthage update
+In your `Package.swift`, add `OpenSSL` as a dependency:
+```swift
+dependencies: [
+  .package(url: "https://github.com/OuterCorner/OpenSSL", from: "1.1.1")
+],
 ```
 
-By default Carthage will download the pre-build binaries (faster), if you want to compile from source pass ```--no-use-binaries``` to the update command above.
+Associate the dependency with your target:
+```swift
+targets: [
+  .target(name: "App", dependencies: ["OpenSSL"])
+]
+```
 
 ## Usage
 
