@@ -5,8 +5,8 @@ PROJ_DIR="$SCRIPTS_DIR/.."
 
 XCBUILD="xcrun xcodebuild"
 
-$XCBUILD build -project "$PROJ_DIR/OpenSSL.xcodeproj" -scheme 'OpenSSL' -configuration Release -destination 'generic/platform=iOS' SYMROOT='build' -ENABLE_BITCODE=YES
-$XCBUILD build -project "$PROJ_DIR/OpenSSL.xcodeproj" -scheme 'OpenSSL' -configuration Release -destination 'generic/platform=iOS Simulator' SYMROOT='build' -ENABLE_BITCODE=YES
+$XCBUILD build -project "$PROJ_DIR/OpenSSL.xcodeproj" -scheme 'OpenSSL' -configuration Release -destination 'generic/platform=iOS' SYMROOT='build'
+$XCBUILD build -project "$PROJ_DIR/OpenSSL.xcodeproj" -scheme 'OpenSSL' -configuration Release -destination 'generic/platform=iOS Simulator' SYMROOT='build'
 $XCBUILD build -project "$PROJ_DIR/OpenSSL.xcodeproj" -scheme 'OpenSSL' -configuration Release -destination 'generic/platform=macOS' SYMROOT='build'
 
 
