@@ -19,6 +19,6 @@ BITCODE_GENERATION_MODE = bitcode
 ENABLE_BITCODE[sdk=iphoneos*] = YES
 ENABLE_BITCODE[sdk=iphonesimulator*] = YES
 
-OPENSSL_OPTIONS = no-weak-ssl-ciphers no-async
+OPENSSL_OPTIONS = no-weak-ssl-ciphers no-async no-tests
 
 APPLICATION_EXTENSION_API_ONLY = YES
