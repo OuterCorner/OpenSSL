@@ -87,4 +87,4 @@ ranlib "$TARGET_BUILD_DIR/$LIB_PRODUCT_NAME"
 
 echo "Copying Headers"
 mkdir -p "$TARGET_BUILD_DIR/headers"
-cp -RLf "$OPENSSL_SRC/include/" "$TARGET_BUILD_DIR/headers"
+cp -RLf "$OPENSSL_SRC/include/"* "$TARGET_BUILD_DIR/headers/"
