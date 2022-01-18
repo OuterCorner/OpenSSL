@@ -6,7 +6,7 @@
 
 This project neatly packs OpenSSL into a dynamic framework for iOS and macOS.
 
-Current OpenSSL version used: 1.1.1l
+Current OpenSSL version used: 1.1.1m
 
 ## Installation
 
