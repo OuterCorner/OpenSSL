@@ -26,7 +26,6 @@ mkdir -p "$OPENSSL_SRC"
 tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
 cd "$OPENSSL_SRC"
 patch -p1 < "$SCRIPTS_DIR/iossimulator_patch.diff"
-patch -p1 < "$SCRIPTS_DIR/macos_arm64_patch.diff"
 
 CC="xcrun -sdk $PLATFORM_NAME cc"
 OPENSSL_OPTIONS="no-shared $OPENSSL_OPTIONS"
