@@ -226,7 +226,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "HEADERS_SOURCE_DIR=\"$TARGET_BUILD_DIR/headers/openssl\"\nHEADERS_INSTALL_DIR=\"$BUILT_PRODUCTS_DIR\"/\"$PUBLIC_HEADERS_FOLDER_PATH\"\nHEADER_LIST=`ls \"$HEADERS_SOURCE_DIR\"/*.h | grep -v \"asn1_mac.h\"`\n\nmkdir -p \"$HEADERS_INSTALL_DIR\"\nfor HEADER in $HEADER_LIST; do\n    cp \"$HEADER\" \"${HEADERS_INSTALL_DIR}\"\ndone\n\nsed -i.bak \"s/\\<openssl\\//\\<OpenSSL\\//g\" \"$HEADERS_INSTALL_DIR/\"*\ncd \"$HEADERS_INSTALL_DIR\"\nrm *.bak\nls *.h | grep -v \"OpenSSL.h\" | sed -Ee \"s|(.+\\.h)$|#import <OpenSSL\\/\\1>|\" >> \"$HEADERS_INSTALL_DIR\"/OpenSSL.h\n";
+			shellScript = "HEADERS_SOURCE_DIR=\"$TARGET_BUILD_DIR/headers/openssl\"\nHEADERS_INSTALL_DIR=\"$BUILT_PRODUCTS_DIR\"/\"$PUBLIC_HEADERS_FOLDER_PATH\"\nHEADER_LIST=`ls \"$HEADERS_SOURCE_DIR\"/*.h | grep -v \"asn1_mac.h\"`\n\nmkdir -p \"$HEADERS_INSTALL_DIR\"\nfor HEADER in $HEADER_LIST; do\n    cp \"$HEADER\" \"${HEADERS_INSTALL_DIR}\"\ndone\n\nsed -i.bak \"s/\\<openssl\\//\\<OpenSSL\\//g\" \"$HEADERS_INSTALL_DIR/\"*\ncd \"$HEADERS_INSTALL_DIR\"\nrm *.bak\nls *.h | grep -v \"OpenSSL.h\" | sed -Ee \"s|(.+\\.h)$|#include <OpenSSL\\/\\1>|\" >> \"$HEADERS_INSTALL_DIR\"/OpenSSL.h\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
