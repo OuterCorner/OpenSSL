@@ -1,89 +1,103 @@
+#!/bin/sh
+set -eu
+
+: "${SRCROOT:?}" "${TARGET_TEMP_DIR:?}" "${TARGET_BUILD_DIR:?}"
+: "${OPENSSL_VERSION:?}" "${PLATFORM_NAME:?}" "${ARCHS:?}" "${FULL_PRODUCT_NAME:?}"
+
 OPENSSL_TARBALL="$SRCROOT/openssl-$OPENSSL_VERSION.tar.gz"
-OPENSSL_SRC="$TARGET_TEMP_DIR/openssl/"
-LIB_PRODUCT_NAME="$FULL_PRODUCT_NAME"
-SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+OPENSSL_ROOT="$TARGET_TEMP_DIR/openssl-$OPENSSL_VERSION"
+OPENSSL_SRC="$OPENSSL_ROOT/source"
+LIBRARY="$TARGET_BUILD_DIR/$FULL_PRODUCT_NAME"
+HEADERS="$TARGET_BUILD_DIR/headers/openssl"
+STAMP="$TARGET_TEMP_DIR/openssl-build.sha256"
+SDK_PATH=$(xcrun --sdk "$PLATFORM_NAME" --show-sdk-path)
+JOBS=${OPENSSL_JOBS:-$(sysctl -n hw.ncpu)}
 
-if [ "$PLATFORM_NAME" == "" ]; then
-	echo "PLATFORM_NAME not defined"
+# An archive alone is not evidence of a complete or up-to-date build.
+BUILD_KEY=$({
+    cat "$0"
+    printf '%s\n' "$OPENSSL_VERSION" "${OPENSSL_OPTIONS:-}" "$PLATFORM_NAME" "$ARCHS" \
+        "$SDK_PATH" "${CONFIGURATION:-Release}" "${IPHONEOS_DEPLOYMENT_TARGET:-}" \
+        "${MACOSX_DEPLOYMENT_TARGET:-}"
+    xcrun clang --version
+} | shasum -a 256 | awk '{print $1}')
+if [ -f "$STAMP" ] && [ "$(cat "$STAMP")" = "$BUILD_KEY" ] && \
+    [ -s "$LIBRARY" ] && [ -s "$HEADERS/configuration.h" ]; then
+    echo "Using OpenSSL $OPENSSL_VERSION ($PLATFORM_NAME: $ARCHS)"
+    exit 0
 fi
-
-# check whether libcrypto.a already exists - we'll only build if it does not
-if [ -f  "$TARGET_BUILD_DIR/$LIB_PRODUCT_NAME" ]; then
-    echo "Using previously-built libary $TARGET_BUILD_DIR/$LIB_PRODUCT_NAME - skipping build"
-    echo "To force a rebuild clean project and clean dependencies"
-    exit 0;
-else
-    echo "No previously-built libary present at $TARGET_BUILD_DIR/$LIB_PRODUCT_NAME - performing build"
-fi
+rm -f "$STAMP"
 
 if [ ! -f "$OPENSSL_TARBALL" ]; then
-	echo "Downloading openssl-$OPENSSL_VERSION.tar.gz"
-	curl -O "https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz" || exit 1
+    echo "Downloading OpenSSL $OPENSSL_VERSION"
+    curl --fail --location --retry 3 \
+        --output "$OPENSSL_TARBALL.download" \
+        "https://github.com/openssl/openssl/releases/download/openssl-$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz"
+    mv "$OPENSSL_TARBALL.download" "$OPENSSL_TARBALL"
 fi
 
-echo "Extracting $OPENSSL_TARBALL..."
-mkdir -p "$OPENSSL_SRC"
-tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL" || exit 1
-cd "$OPENSSL_SRC"
-patch -p1 < "$SCRIPTS_DIR/iossimulator_patch.diff"
+rm -rf "$OPENSSL_ROOT"
+mkdir -p "$OPENSSL_SRC" "$TARGET_BUILD_DIR"
+tar -C "$OPENSSL_SRC" --strip-components=1 -zxf "$OPENSSL_TARBALL"
+rm -rf "$HEADERS"
+mkdir -p "$HEADERS"
 
-CC="xcrun -sdk $PLATFORM_NAME cc"
-OPENSSL_OPTIONS="no-shared $OPENSSL_OPTIONS"
+export SDKROOT="$SDK_PATH"
+export CC="$(xcrun --sdk "$PLATFORM_NAME" --find clang)"
+export CXX="$(xcrun --sdk "$PLATFORM_NAME" --find clang++)"
+export AR="$(xcrun --find ar)"
+export RANLIB="$(xcrun --find ranlib)"
 
-echo "Creating $LIB_PRODUCT_NAME with $OPENSSL_OPTIONS for architectures: $ARCHS"
+set --
+for BUILDARCH in $ARCHS; do
+    case "$PLATFORM_NAME:$BUILDARCH" in
+        macosx:arm64) TARGET=darwin64-arm64-cc ;;
+        macosx:x86_64) TARGET=darwin64-x86_64-cc ;;
+        iphoneos:arm64) TARGET=ios64-xcrun ;;
+        iphonesimulator:arm64) TARGET=iossimulator-arm64-xcrun ;;
+        iphonesimulator:x86_64) TARGET=iossimulator-x86_64-xcrun ;;
+        *) echo "error: Unsupported OpenSSL platform/architecture: $PLATFORM_NAME:$BUILDARCH" >&2; exit 1 ;;
+    esac
+    case "$PLATFORM_NAME" in
+        macosx) MIN_FLAG="-mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET" ;;
+        iphoneos) MIN_FLAG="-miphoneos-version-min=$IPHONEOS_DEPLOYMENT_TARGET" ;;
+        iphonesimulator) MIN_FLAG="-mios-simulator-version-min=$IPHONEOS_DEPLOYMENT_TARGET" ;;
+    esac
+    case "${CONFIGURATION:-Release}" in
+        Debug) OPTIMIZATION=-O0 ;;
+        *) OPTIMIZATION=-O3 ;;
+    esac
 
+    ARCH_DIR="$OPENSSL_ROOT/$BUILDARCH"
+    mkdir -p "$ARCH_DIR"
+    cd "$ARCH_DIR"
+    echo "Building OpenSSL $OPENSSL_VERSION for $PLATFORM_NAME ($BUILDARCH)"
+    # Word splitting is intentional for the space-separated xcconfig options.
+    perl "$OPENSSL_SRC/Configure" "$TARGET" no-shared no-module no-dso \
+        ${OPENSSL_OPTIONS:-} -g "$OPTIMIZATION" "-arch $BUILDARCH" \
+        "-isysroot $SDK_PATH" "$MIN_FLAG" --openssldir=/etc/ssl
+    make -j "$JOBS" build_libs
+    xcrun libtool -static libcrypto.a libssl.a -o "$ARCH_DIR/$FULL_PRODUCT_NAME"
+    set -- "$@" "$ARCH_DIR/$FULL_PRODUCT_NAME"
 
-
-for BUILDARCH in $ARCHS
-do
-	echo "Building $BUILDARCH"
-
-	make clean
-
-	if [ "$PLATFORM_NAME" = "macosx" ]; then
-		if [ "$BUILDARCH" = "i386" ]; then
-			CONFIGURE_OPTIONS="darwin-i386-cc $OPENSSL_OPTIONS"
-		elif [ "$BUILDARCH" = "x86_64" ]; then
-			CONFIGURE_OPTIONS="darwin64-x86_64-cc $OPENSSL_OPTIONS"
-        elif [ "$BUILDARCH" = "arm64" ]; then
-            CONFIGURE_OPTIONS="darwin64-arm64-cc $OPENSSL_OPTIONS"
-        fi
-	elif [ "$PLATFORM_NAME" = "iphoneos" ]; then
-		if [[ "$BUILDARCH" = "armv"* ]]; then
-			CONFIGURE_OPTIONS="ios-xcrun $OPENSSL_OPTIONS"
-		elif [ "$BUILDARCH" = "arm64" ]; then
-			CONFIGURE_OPTIONS="ios64-xcrun $OPENSSL_OPTIONS"
-		fi
-	elif [ "$PLATFORM_NAME" = "iphonesimulator" ]; then
-		if [ "$BUILDARCH" = "i386" ]; then
-			CONFIGURE_OPTIONS="iossimulator-xcrun $OPENSSL_OPTIONS"
-		elif [ "$BUILDARCH" = "x86_64" ]; then
-			CONFIGURE_OPTIONS="iossimulator64-xcrun $OPENSSL_OPTIONS"
-        elif [ "$BUILDARCH" = "arm64" ]; then
-            CONFIGURE_OPTIONS="iossimulator-arm64-xcrun $OPENSSL_OPTIONS"
-        fi
-	else
-		echo "Unsupported platform $PLATFORM_NAME"
-		exit 1
-	fi
-	
-	./Configure  $CONFIGURE_OPTIONS -fembed-bitcode -openssldir="$BUILD_DIR"
-	
-    make depend
-    make
-
-	echo "Creating $LIB_PRODUCT_NAME for $BUILDARCH in $TARGET_TEMP_DIR"
-    libtool -static libcrypto.a libssl.a -o "$TARGET_TEMP_DIR/$BUILDARCH-$LIB_PRODUCT_NAME"
+    # Use only public headers, including those generated by Configure/make.
+    cp "$OPENSSL_SRC/include/openssl/"*.h "$HEADERS/"
+    cp "$ARCH_DIR/include/openssl/"*.h "$HEADERS/"
+    chmod u+w "$HEADERS/"*.h
+    cp "$ARCH_DIR/include/openssl/configuration.h" "$OPENSSL_ROOT/configuration-$BUILDARCH.h"
 done
 
-
-echo "Creating universal archive in $TARGET_BUILD_DIR"
-mkdir -p "$TARGET_BUILD_DIR"
-lipo -create "$TARGET_TEMP_DIR/"*-$LIB_PRODUCT_NAME -output "$TARGET_BUILD_DIR/$LIB_PRODUCT_NAME"
-
-echo "Executing ranlib"
-ranlib "$TARGET_BUILD_DIR/$LIB_PRODUCT_NAME"
-
-echo "Copying Headers"
-mkdir -p "$TARGET_BUILD_DIR/headers"
-cp -RLf "$OPENSSL_SRC/include/"* "$TARGET_BUILD_DIR/headers/"
+# Each architecture must see its own generated configuration in a fat framework.
+{
+    for BUILDARCH in $ARCHS; do
+        case "$BUILDARCH" in
+            arm64) echo '#if defined(__arm64__) || defined(__aarch64__)' ;;
+            x86_64) echo '#if defined(__x86_64__)' ;;
+        esac
+        cat "$OPENSSL_ROOT/configuration-$BUILDARCH.h"
+        echo '#endif'
+    done
+} > "$HEADERS/configuration.h"
+xcrun lipo -create "$@" -output "$LIBRARY"
+xcrun ranlib "$LIBRARY"
+printf '%s\n' "$BUILD_KEY" > "$STAMP"

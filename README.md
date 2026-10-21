@@ -6,7 +6,7 @@
 
 This project neatly packs OpenSSL into a dynamic framework for iOS and macOS.
 
-Current OpenSSL version used: 1.1.1m
+Current OpenSSL version used: 4.0.3
 
 ## Installation
 
@@ -22,7 +22,7 @@ You have a few different options:
 In your `Package.swift`, add `OpenSSL` as a dependency:
 ```swift
 dependencies: [
-  .package(url: "https://github.com/OuterCorner/OpenSSL", from: "1.1.1")
+  .package(url: "https://github.com/OuterCorner/OpenSSL", from: "4.0.3")
 ],
 ```
 
@@ -32,6 +32,24 @@ targets: [
   .target(name: "App", dependencies: ["OpenSSL"])
 ]
 ```
+
+## Building
+
+Run `bash Scripts/create-xcframework.sh` with Xcode selected as the active developer directory.
+The result is `build/OpenSSL.xcframework`, including dSYMs, with these slices:
+
+* iOS: arm64 (iOS 17.6 or later)
+* iOS Simulator: arm64 and x86_64 (iOS 17.6 or later)
+* macOS: arm64 and x86_64 (macOS 14.6 or later)
+
+The first build downloads the OpenSSL source archive from its GitHub release.
+The scripts build static OpenSSL libraries into the dynamic framework, using built-in
+providers with dynamic module loading disabled. Bitcode is disabled for current Xcode.
+Builds reuse the libraries only while the version, options, architectures, SDK,
+configuration, deployment targets, and build script match. Clean the project to force a rebuild.
+
+The SwiftPM manifest references the ZIP archive attached to the matching GitHub release.
+When publishing a release, update its URL and checksum in `Package.swift`.
 
 ## Usage
 
@@ -49,16 +67,6 @@ int rc = RAND_bytes(buffer, sizeof(buffer));
 ```
 
 See example projects under ```Examples/```.
-
-## Issues
-
-When including this framework in your project you'll have to set **Allow Non-modular Includes In Framework Modules** to YES.
-
-```
-CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES
-```
-
-This is needed because the current version of OpenSSL's public headers reference system headers.
 
 ## License
 

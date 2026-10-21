@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "OpenSSL",
     platforms: [
-        .macOS(.v10_10), .iOS(.v9)
+        .macOS("14.6"), .iOS("17.6")
         ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
@@ -18,8 +18,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "OpenSSL",
-            url: "https://github.com/OuterCorner/OpenSSL/releases/download/1.2.1/OpenSSL.xcframework.zip",
-            checksum: "c39deefb852b1604a5028bf7f71ff92d9e5c78fc6725d589173e092f22b902b6"
+            url: "https://github.com/OuterCorner/OpenSSL/releases/download/4.0.3/OpenSSL.xcframework.zip",
+            checksum: "ebd66bfb77feeb598fb63d00f08a131f75bae66d5f853bf4c3e894e9199124cd"
         )
     ]
 )

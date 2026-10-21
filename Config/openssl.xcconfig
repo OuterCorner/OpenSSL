@@ -9,14 +9,12 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
-OPENSSL_VERSION = 1.1.1m
-BUILD_VERSION = 220118.0
+OPENSSL_VERSION = 4.0.3
+BUILD_VERSION = 261021.0
 
-DYLIB_COMPATIBILITY_VERSION = 1.1
 CURRENT_PROJECT_VERSION = $(BUILD_VERSION)
 
-BITCODE_GENERATION_MODE = bitcode
-ENABLE_BITCODE = YES
+ENABLE_BITCODE = NO
 
 OPENSSL_OPTIONS = no-weak-ssl-ciphers no-async no-tests
 
